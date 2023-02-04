@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Container, Row, Col, Input, InputGroup, Button, CardTitle, CardText, Card, FormGroup} from "reactstrap";
+import {Container, Row, Col, Input, InputGroup, Button, Card, FormGroup} from "reactstrap";
 
 const Editor = () => {
   const [history, setHistory] = useState(["Change the background color to red."]);
@@ -27,7 +27,7 @@ const Editor = () => {
         ...prevState,
         ["file"]: i,
       }));
-      setCreateObjectURL(URL.createObjectURL(i));
+      setImageURL(URL.createObjectURL(i));
     }
   };
 
@@ -48,8 +48,7 @@ const Editor = () => {
             <FormGroup >
               <Input
                   name="file"
-                  value={formState["file"]}
-                  onChange={handleChange}
+                  onChange={uploadToClient}
                   type="file"
               />
             </FormGroup>
