@@ -4,14 +4,17 @@ import { TiTick } from 'react-icons/ti';
 import { GrClose } from 'react-icons/gr';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
 const Editor = () => {
   const [history, setHistory] = useState([]);
+  const [previous, setPrevious] = useState({
+    prompt: "",
+    imageURL: "https://picsum.photos/id/27/800/600",
+    status: ""
+  });
   const [current, setCurrent] = useState({
     prompt: "",
-    imageURL: "https://picsum.photos/800/600",
-    imageBlob: null,
-    status: ""
+    imageURL: "",
+    status: "succeeded"
   });
 
   const handleChange = (event) => {
@@ -24,18 +27,19 @@ const Editor = () => {
 
   const handleEdit = async (event) => {
     const prompt = current["prompt"]
-    
+    const reqBody = JSON.stringify({
+      prompt: prompt,
+      num_inference_steps: 10,
+      image: previous.imageURL
+    })
+    console.log(`handle Edit req body ${reqBody}`)
     // Low fidelity request
     const low_fidelity_response = fetch("/api/pix2pix", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        prompt: prompt,
-        num_inference_steps: 10,
-        image: current.imageBlob ?? current.imageURL
-      })
+      body: reqBody
     }).then(async (resp) => {
       const resp_json = await resp.json()
       console.log(resp_json)
@@ -53,14 +57,20 @@ const Editor = () => {
         await sleep(1000)
         prediction = await fetch(`/api/pix2pix/${resp_json.id}`)
         prediction = await prediction.json()
+
+        if (prediction.status === "failed") {
+          console.log(`failed because ${prediction.detail}`)
+          console.log(prediction)
+          break
+        }
       }
       console.log(`succeeded for id ${resp_json.id}`)
+
       setCurrent((prev) => {
         return {
           ...prev,
           "status": "low_fidelity",
-          "imageURL": prediction.output_image,
-          "imageBlob": null,
+          "imageURL": prediction.output
         }
       })
     })
@@ -71,9 +81,8 @@ const Editor = () => {
     if (event.target.files && event.target.files[0]) {
       const i = event.target.files[0];
 
-      setCurrent((prevState) => ({
+      setPrevious((prevState) => ({
         ...prevState,
-        ["imageBlob"]: i,
         ["imageURL"]: URL.createObjectURL(i)
       }));
     }
@@ -81,14 +90,24 @@ const Editor = () => {
 
   
   const handleAccept = () => {
+    setPrevious(current)
     setHistory([
       ...history,
       current
     ])
+    setCurrent({
+      prompt: "",
+      imageURL: "",
+      status: "succeeded"
+    }) // Clear current
   }
 
   const handleReject = () => {   
-    // Display last image
+    setCurrent({
+      prompt: "",
+      imageURL: "",
+      status: "succeeded"
+    }) // Clear current
   }
 
   const handleHistory = (i) => {
@@ -127,14 +146,16 @@ const Editor = () => {
         </Row>
         <Row className={"my-4"}>
           <Col lg={5} md={5}>
+          {/** Previous (or Original) Image */}
             <Card body>
               <img
                   alt="Input"
-                  src={current["imageURL"]}
+                  src={previous["imageURL"]}
               />
             </Card>
           </Col>
           <Col lg={5} md={5}>
+            {/** Current Image */}
             <Card body>
               {current["status"] === "pending" ? 
               <Row className="justify-content-center">
@@ -147,10 +168,10 @@ const Editor = () => {
                 >
                   Loading...
                 </Spinner>
-              </Row> :  <img
+              </Row> :  current["imageURL"] !== "" ? <img
                   alt="Input"
-                  src={current.imageURL}
-              />}
+                  src={current.imageURL}/> : null
+              }
             </Card>
           </Col>
           <Col lg={2} md={2}>
@@ -169,9 +190,9 @@ const Editor = () => {
             <h3 className={"mt-2"}>
               Edit History
             </h3>
-              {history.map((h, i) => {
+              {/* {history.map((h, i) => {
                   return <a onClick={(i) => handleHistory(i)} key={i}>{h}</a>
-              })}
+              })} */}
 
           </Col>
         </Row>

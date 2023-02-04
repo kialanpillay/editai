@@ -16,10 +16,9 @@ export default async function handler(req, res) {
         image:  req.body.image,
         prompt: req.body.prompt,
         num_inference_steps: req.body.num_inference_steps,
-        
   
         num_outputs: 1,
-        image_guidance_scale: 1.5,
+        image_guidance_scale: 2,
         guidance_scale: 7.5,
         scheduler: "K_EULER_ANCESTRAL",
       },
