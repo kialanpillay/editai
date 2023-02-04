@@ -3,9 +3,7 @@ import Head from "next/head";
 import Layout from "../components/Layout";
 import Header from "../components/Header";
 import Hero from "../components/Hero";
-import Feature from '../components/Feature';
-import Service from '../components/Service';
-import About from '../components/About';
+import Editor from '../components/Editor';
 import Footer from '../components/Footer';
 
 export default function Index() {
@@ -55,9 +53,7 @@ export default function Index() {
       <Layout pageTitle="Landing Page Nextjs">
         <Header />
         <Hero />
-        <Service />
-        <About />
-        <Footer />
+        <Editor />
       </Layout>
     </div>
   )

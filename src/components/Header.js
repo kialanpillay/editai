@@ -28,26 +28,8 @@ const Header = () => {
 
   return (
     <Navbar color="light" light container="md" expand="md" sticky={sticky ? "top" : ""}>
-      <NavbarBrand href="/">LOGO</NavbarBrand>
+      <NavbarBrand href="/">EditAI</NavbarBrand>
       <NavbarToggler onClick={toggle} />
-      <Collapse isOpen={isOpen} navbar>
-        <Nav className="ms-auto" navbar>
-          <Nav className="m-auto" navbar>
-            <NavItem>
-              <NavLink href="/">Home</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink href="#feature">Features</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink href="#service">Services</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink href="#about">About</NavLink>
-            </NavItem>
-          </Nav>
-        </Nav>
-      </Collapse>
     </Navbar>
   )
 }
