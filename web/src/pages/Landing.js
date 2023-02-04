@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { Button, Container } from "react-bootstrap";
-import { initConnection, initTerra } from "terra-react";
+import { Connections, initConnection, initTerra } from "terra-react";
 
 const Landing = () => {
   useEffect(() => {
     const init = async () => {
-      await initTerra("ichackflatline-dev-lB5aohCxQY");
+      await initTerra("ichackflatline-dev-lB5aohCxQY", "1");
       await initConnection(
-        [Connections.APPLE_HEALTH],
+        Connections.APPLE_HEALTH,
         "0c9e099cf990db13decf253d451729010a8ce521082421b660fe194d7d96e0d7",
         true
       );
