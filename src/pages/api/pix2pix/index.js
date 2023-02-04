@@ -13,20 +13,20 @@ export default async function handler(req, res) {
 
       // This is the text prompt that will be submitted by a form on the frontend
       input: {
-        image:  req.body.image,
+        image: req.body.image,
         prompt: req.body.prompt,
         num_inference_steps: req.body.num_inference_steps,
-  
+
         num_outputs: 1,
         image_guidance_scale: 2,
         guidance_scale: 7.5,
-        scheduler: "K_EULER_ANCESTRAL",
+        scheduler: "K_EULER",
       },
     }),
   });
 
-  console.log(req)
-  console.log(response)
+  console.log(req);
+  console.log(response);
   if (response.status !== 201) {
     let error = await response.json();
     res.statusCode = 500;
