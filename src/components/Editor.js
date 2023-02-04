@@ -1,9 +1,11 @@
 import React, {useState} from 'react';
-import {Container, Row, Col, Input, InputGroup, Button, CardTitle, CardText, Card, FormGroup} from "reactstrap";
+import {Container, Row, Col, Input, InputGroup, Button, Card, FormGroup} from "reactstrap";
 
 const Editor = () => {
   const [history, setHistory] = useState([]);
   const [formState, setFormState] = useState({});
+  const [images, setImages] = useState([]);
+  const [imageURL, setImageURL] = useState(null);
 
   const handleChange = (event) => {
     const {name, value} = event.target
@@ -41,7 +43,27 @@ const Editor = () => {
     }).then()    
 
     // Update history
+  };
 
+  const uploadToClient = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      const i = event.target.files[0];
+
+      setFormState((prevState) => ({
+        ...prevState,
+        ["file"]: i,
+      }));
+      setImageURL(URL.createObjectURL(i));
+    }
+  };
+
+  const uploadToServer = async (event) => {
+    const body = new FormData();
+    body.append("file", image);
+    const response = await fetch("/api/file", {
+      method: "POST",
+      body
+    });
   };
 
   return (
@@ -52,7 +74,7 @@ const Editor = () => {
             <FormGroup >
               <Input
                   name="file"
-                  value={formState["file"]}
+                  onChange={uploadToClient}
                   type="file"
               />
             </FormGroup>
@@ -77,8 +99,8 @@ const Editor = () => {
           <Col lg={6} md={6}>
             <Card body>
               <img
-                  alt="Card"
-                  src="https://picsum.photos/300/200"
+                  alt="Input"
+                  src={imageURL}
               />
             </Card>
           </Col>
