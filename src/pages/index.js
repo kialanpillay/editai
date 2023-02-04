@@ -1,11 +1,14 @@
 import { useState } from "react";
 import Head from "next/head";
-import Image from "next/image";
-import styles from "../styles/Home.module.css";
+import Layout from "../components/Layout";
+import Header from "../components/Header";
+import Hero from "../components/Hero";
+import Feature from '../components/Feature';
+import Service from '../components/Service';
+import About from '../components/About';
+import Footer from '../components/Footer';
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-export default function Home() {
+export default function Index() {
   const [prediction, setPrediction] = useState(null);
   const [error, setError] = useState(null);
 
@@ -44,38 +47,18 @@ export default function Home() {
   };
 
   return (
-    <div className={styles.container}>
+    <div>
       <Head>
         <title>Replicate + Next.js</title>
       </Head>
 
-      <p>
-        Dream something with{" "}
-        <a href="https://replicate.com/stability-ai/stable-diffusion">stability-ai/stable-diffusion</a>:
-      </p>
-
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <input type="text" name="prompt" placeholder="Enter a prompt to display an image" />
-        <button type="submit">Go!</button>
-      </form>
-
-      {error && <div>{error}</div>}
-
-      {prediction && (
-        <div>
-            {prediction.output && (
-              <div className={styles.imageWrapper}>
-              <Image
-                fill
-                src={prediction.output[prediction.output.length - 1]}
-                alt="output"
-                sizes='100vw'
-              />
-              </div>
-            )}  
-            <p>status: {prediction.status}</p>
-        </div>
-      )}
+      <Layout pageTitle="Landing Page Nextjs">
+        <Header />
+        <Hero />
+        <Service />
+        <About />
+        <Footer />
+      </Layout>
     </div>
-  );
+  )
 }
