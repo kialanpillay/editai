@@ -5,7 +5,7 @@ import Landing from "./pages/Landing";
 function App() {
   return (
     <>
-      <Router history={history}>
+      <Router>
         <div className={"App"}>
           <Routes>
             <Route path="/" element={<Landing />} />
