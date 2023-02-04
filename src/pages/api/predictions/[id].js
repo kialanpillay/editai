@@ -16,5 +16,11 @@ export default async function handler(req, res) {
   }
 
   const prediction = await response.json();
-  res.end(JSON.stringify(prediction));
+
+  res.end(
+    JSON.stringify({
+      status: prediction.status,
+      output_image: prediction?.output,
+    })
+  );
 }

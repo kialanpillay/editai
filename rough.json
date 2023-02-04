@@ -1,0 +1,20 @@
+{
+  "completed_at": null,
+  "created_at": "2023-02-04T16:07:33.989679Z",
+  "error": null,
+  "id": "ycahe2valjh2bob7y6z5f7oyom",
+  "input": {
+    "prompt": "the person walked forward and is picking up his toolbox.\n"
+  },
+  "logs": null,
+  "metrics": {},
+  "output": null,
+  "started_at": null,
+  "status": "starting",
+  "urls": {
+    "get": "https://api.replicate.com/v1/predictions/ycahe2valjh2bob7y6z5f7oyom",
+    "cancel": "https://api.replicate.com/v1/predictions/ycahe2valjh2bob7y6z5f7oyom/cancel"
+  },
+  "version": "e5233acab7d67cec63adc88c7562a0f7269bd9a4ed36a51b311575459190c7e8",
+  "webhook_completed": null
+}
