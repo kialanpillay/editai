@@ -50,7 +50,7 @@ export default function Index() {
         <title>Replicate + Next.js</title>
       </Head>
 
-      <Layout pageTitle="Landing Page Nextjs">
+      <Layout pageTitle="EditAI">
         <Header />
         <Hero />
         <Editor />

@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Container, Row, Col, Input, InputGroup, Button, CardTitle, CardText, Card} from "reactstrap";
 
 const Editor = () => {
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState(["Change the background color."]);
   const [prompt, setPrompt] = useState("")
 
   const handleChange = (event) => {
@@ -37,27 +37,33 @@ const Editor = () => {
         <Row className={"my-4"}>
           <Col lg={6} md={6}>
             <Card body>
-
-              <CardTitle tag="h5">
-                Special Title Treatment
-              </CardTitle>
               <img
                   alt="Card"
                   src="https://picsum.photos/300/200"
               />
-              <Row>
-                <Col lg={'auto'}>
-                  <Button>
-                    Go somewhere
-                  </Button>
-                </Col>
-                <Col lg={'auto'}>
-                  <Button>
-                    Go somewhere
-                  </Button>
-                </Col>
-              </Row>
             </Card>
+          </Col>
+          <Col lg={6} md={6}>
+            <h3>
+              Edit History
+            </h3>
+
+              {history.map((h, i) => {
+                  return <a href={"#"} onClick={null} key={i}>{h}</a>
+              })}
+
+          </Col>
+        </Row>
+        <Row className={"mt-3"}>
+          <Col lg={'auto'} className={"mr-1"}>
+            <Button color="primary" size={"lg"}>
+              Confirm
+            </Button>
+          </Col>
+          <Col lg={'auto'} >
+            <Button color="secondary" size={"lg"}>
+              Retry
+            </Button>
           </Col>
         </Row>
       </Container>
