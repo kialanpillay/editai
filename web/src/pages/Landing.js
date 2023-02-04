@@ -1,19 +1,28 @@
 import React, { useEffect } from "react";
 import { Button, Container } from "react-bootstrap";
-import { Connections, initConnection, initTerra } from "terra-react";
+const { default: Terra } = require("terra-api");
 
 const Landing = () => {
-  useEffect(() => {
-    const init = async () => {
-      await initTerra("ichackflatline-dev-lB5aohCxQY", "1");
-      await initConnection(
-        Connections.APPLE_HEALTH,
-        "0c9e099cf990db13decf253d451729010a8ce521082421b660fe194d7d96e0d7",
-        true
-      );
-    };
+  const terra = new Terra(
+    "ichackflatline-dev-lB5aohCxQY",
+    "0c9e099cf990db13decf253d451729010a8ce521082421b660fe194d7d96e0d7"
+  );
 
-    void init();
+  useEffect(() => {
+    terra
+      .generateWidgetSession({
+        referenceID: "1",
+        providers: ["Apple"],
+        showDisconnect: true,
+        language: "EN",
+        authSuccessRedirectUrl: "success.com",
+        authFailureRedirectUrl: "failure.com",
+      })
+      .then((s) => {
+        // use the various response elements
+        if (s.status === "success") console.log(s.url);
+        else console.log(s.status);
+      });
   });
 
   return (
