@@ -13,8 +13,7 @@ export default async function handler(req, res) {
 
       // This is the text prompt that will be submitted by a form on the frontend
       input: {
-        image:
-          "https://replicate.delivery/pbxt/IBnrzJD8Vvz3rD7yF5W8ODnpeA5wcoNpP1RRiDutqW1nG8eF/example.jpeg",
+        image:  req.body.image,
         prompt: req.body.prompt,
         num_inference_steps: req.body.num_inference_steps,
         
@@ -27,6 +26,8 @@ export default async function handler(req, res) {
     }),
   });
 
+  console.log(req)
+  console.log(response)
   if (response.status !== 201) {
     let error = await response.json();
     res.statusCode = 500;
