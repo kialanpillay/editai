@@ -2,9 +2,8 @@ import React, {useState} from 'react';
 import {Container, Row, Col, Input, InputGroup, Button, CardTitle, CardText, Card, FormGroup} from "reactstrap";
 
 const Editor = () => {
-  const [history, setHistory] = useState(["Change the background color to red."]);
+  const [history, setHistory] = useState([]);
   const [formState, setFormState] = useState({});
-  const [images, setImages] = useState([]);
 
   const handleChange = (event) => {
     const {name, value} = event.target
@@ -16,6 +15,33 @@ const Editor = () => {
 
   const handleSubmit = (event) => {
     // Call API
+
+    // Low fidelity request
+    const low_fidelity_response = fetch("/api/pix2pix", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        prompt: formState["prompt"],
+        num_inference_steps: 10
+      })
+    }).then()
+
+    // High fidelity request
+    const high_fidelity_response = fetch("/api/pix2pix", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        prompt: formState["prompt"],
+        num_inference_steps: 100
+      })
+    }).then()    
+
+    // Update history
+
   };
 
   return (
@@ -60,7 +86,6 @@ const Editor = () => {
             <h3>
               Edit History
             </h3>
-
               {history.map((h, i) => {
                   return <a href={"#"} onClick={null} key={i}>{h}</a>
               })}
