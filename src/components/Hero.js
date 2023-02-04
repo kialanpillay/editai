@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col } from 'reactstrap';
+import {Container, Row, Col, FormGroup, Label, Input} from 'reactstrap';
 
 const Hero = () => {
   return (
@@ -11,7 +11,7 @@ const Hero = () => {
               <h1 className="mb-4 font-weight-normal line-height-1_4">Edit<span className="text-primary font-weight-medium">AI</span></h1>
               <p className="text-muted mb-4 pb-2">Forget Photoshop. Edit any image instantly using your voice or text</p>
               <a href="#editor" className="btn btn-primary">
-                Upload Image <span className="ml-2 right-icon">&#8594;</span>
+                Get Started <span className="ml-2 right-icon">&#8594;</span>
               </a>
             </div>
           </Col>

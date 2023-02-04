@@ -1,12 +1,17 @@
 import React, {useState} from 'react';
-import {Container, Row, Col, Input, InputGroup, Button, CardTitle, CardText, Card} from "reactstrap";
+import {Container, Row, Col, Input, InputGroup, Button, CardTitle, CardText, Card, FormGroup} from "reactstrap";
 
 const Editor = () => {
-  const [history, setHistory] = useState(["Change the background color."]);
-  const [prompt, setPrompt] = useState("")
+  const [history, setHistory] = useState(["Change the background color to red."]);
+  const [formState, setFormState] = useState({});
+  const [images, setImages] = useState([]);
 
   const handleChange = (event) => {
-    setPrompt(event.target.value)
+    const {name, value} = event.target
+    setFormState((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (event) => {
@@ -15,15 +20,22 @@ const Editor = () => {
 
   return (
     <section className="section" id="service">
-      <Container>
-        <Row className="justify-content-center">
-        </Row>
-        <Row>
-          <Col lg={10} md={12}>
+      <Container id={"editor"}>
+        <Row className=" pt-5">
+          <Col lg={6} md={12}>
+            <FormGroup >
+              <Input
+                  name="file"
+                  value={formState["file"]}
+                  type="file"
+              />
+            </FormGroup>
+          </Col>
+          <Col lg={6} md={12}>
             <InputGroup>
               <Input
                   name="prompt"
-                  value={prompt}
+                  value={formState["prompt"]}
                   placeholder="Change the background color to red."
                   onChange={handleChange}
                   type="text"/>
@@ -32,7 +44,8 @@ const Editor = () => {
               </Button>
             </InputGroup>
           </Col>
-          <Col lg={2} md={12}> </Col>
+
+
         </Row>
         <Row className={"my-4"}>
           <Col lg={6} md={6}>
