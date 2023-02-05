@@ -314,18 +314,21 @@ const Editor = () => {
                 </Button>
               </Col>
             </Row>
-            <h3 className={"mt-2"}>Edit History</h3>
-            <ul>
+            <h3 className={"mt-2 fw-light"}>Edit History</h3>
+            
               {history.map((h, i) => {
-                console.log(h);
-                console.log(i);
                 return (
-                  <li onClick={(_) => handleHistory(i)} key={i}>
-                    {h.prompt}
-                  </li>
+                  <Button
+                    color="light"
+                    onClick={(_) => handleHistory(i)}
+                    key={i}
+                    className="mb-1"
+                  >
+                    {`(${i+1}) ${h.prompt}`}
+                  </Button>
                 );
               })}
-            </ul>
+            
           </Col>
         </Row>
       </Container>
