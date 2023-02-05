@@ -12,8 +12,8 @@ import {
 } from "reactstrap";
 import { TiTick } from "react-icons/ti";
 import { GrClose } from "react-icons/gr";
-import ReactCrop from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
+import ReactCrop from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
 
 const SERVER_URL = "http://localhost:5000";
 
@@ -25,7 +25,15 @@ function blobToBase64(blob) {
   });
 }
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+async function createFile(url){
+  let response = await fetch(url);
+  let data = await response.blob();
+  let metadata = {
+    type: 'image/png'
+  };
+  return new File([data], "temp.png", metadata);
+}
+
 const Editor = () => {
   const [history, setHistory] = useState([]);
   const [previous, setPrevious] = useState({
@@ -65,8 +73,8 @@ const Editor = () => {
       prompt: prompt,
       num_inference_steps: 10,
       image: getBase64StringFromDataURL(imageBlobStr),
+      mask: previous.mask,
     });
-
 
     setCurrent((prev) => {
       return {
@@ -85,11 +93,13 @@ const Editor = () => {
     }).then(async (resp) => {
       const prediction = await resp.json();
       console.log(prediction);
-
+      
+      const blob = await createFile(prediction.output);
       setCurrent((prev) => {
         return {
           ...prev,
           status: "low_fidelity",
+          imageBlob: blob,
           imageURL: prediction.output,
         };
       });
@@ -138,12 +148,8 @@ const Editor = () => {
       <Container id={"editor"}>
         <Row className=" pt-5">
           <Col lg={5} md={5}>
-            <FormGroup >
-              <Input
-                  name="file"
-                  onChange={uploadToClient}
-                  type="file"
-              />
+            <FormGroup>
+              <Input name="file" onChange={uploadToClient} type="file" />
             </FormGroup>
           </Col>
           <Col lg={5} md={5}>
@@ -159,10 +165,14 @@ const Editor = () => {
             </InputGroup>
           </Col>
           <Col>
-            <Button onClick={() => setPrevious({
-              ...previous,
-              "mask": null
-            })}>
+            <Button
+              onClick={() =>
+                setPrevious({
+                  ...previous,
+                  mask: null,
+                })
+              }
+            >
               Clear mask
             </Button>
           </Col>
@@ -171,55 +181,54 @@ const Editor = () => {
           <Col lg={5} md={5}>
             {/** Previous (or Original) Image */}
             <Card body>
-              <ReactCrop crop={previous.mask} onChange={c => setPrevious({
-                ...previous,
-                "mask": c
-              })}>
-                <img
-                  alt="Input"
-                  src={previous["imageURL"]}
-                />
+              <ReactCrop
+                crop={previous.mask}
+                onChange={(c) =>
+                  setPrevious({
+                    ...previous,
+                    mask: c,
+                  })
+                }
+              >
+                <img alt="Input" src={previous["imageURL"]} />
               </ReactCrop>
             </Card>
           </Col>
           <Col lg={5} md={5}>
             {/** Current Image */}
             <Card body>
-              {current["status"] === "pending" ? 
-              <Row className="justify-content-center">
-                 <Spinner
-                  color="primary"
-                  style={{
-                    height: '3rem',
-                    width: '3rem'
-                  }}
-                >
-                  Loading...
-                </Spinner>
-              </Row> :  current["imageURL"] !== "" ? 
-                <img
-                  alt="Input"
-                  src={current.imageURL}/> : null
-              }
+              {current["status"] === "pending" ? (
+                <Row className="justify-content-center">
+                  <Spinner
+                    color="primary"
+                    style={{
+                      height: "3rem",
+                      width: "3rem",
+                    }}
+                  >
+                    Loading...
+                  </Spinner>
+                </Row>
+              ) : current["imageURL"] !== "" ? (
+                <img alt="Input" src={current.imageURL} />
+              ) : null}
             </Card>
           </Col>
           <Col lg={2} md={2}>
-          <Row>
-          <Col lg={3}>
-            <Button color="primary" onClick={handleAccept}>
-              <TiTick/>
-            </Button>
-          </Col>
-          <Col lg={3}>
-            <Button color="light" onClick={handleReject}>
-            <GrClose color='white'/>
-            </Button>
-          </Col>
-          </Row>
-            <h3 className={"mt-2"}>
-              Edit History
-            </h3>
-              {/* {history.map((h, i) => {
+            <Row>
+              <Col lg={3}>
+                <Button color="primary" onClick={handleAccept}>
+                  <TiTick />
+                </Button>
+              </Col>
+              <Col lg={3}>
+                <Button color="light" onClick={handleReject}>
+                  <GrClose color="white" />
+                </Button>
+              </Col>
+            </Row>
+            <h3 className={"mt-2"}>Edit History</h3>
+            {/* {history.map((h, i) => {
             <Row>
               <Col lg={3}>
                 <Button color="primary" onClick={handleAccept}>

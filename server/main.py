@@ -44,6 +44,7 @@ async def root(body: dict):
     }
     output = version.predict(**inputs)
     return {"output": output[0]}
+    # return {"output": "output[0]"}
 
 
 uvicorn.run(app, host="0.0.0.0", port=5000)
