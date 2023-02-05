@@ -15,6 +15,14 @@ import { GrClose } from "react-icons/gr";
 
 const SERVER_URL = "http://localhost:5000";
 
+function blobToBase64(blob) {
+  return new Promise((resolve, _) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const Editor = () => {
   const [history, setHistory] = useState([]);
@@ -41,12 +49,20 @@ const Editor = () => {
 
   const handleEdit = async (event) => {
     const prompt = current["prompt"];
+    console.log(previous.imageBlob);
+
+    // then use JSON.stringify on new object
+    let imageBlobStr = await blobToBase64(previous.imageBlob);
+
+    const getBase64StringFromDataURL = (dataURL) =>
+      dataURL.replace("data:", "").replace(/^.+,/, "");
+
     const reqBody = JSON.stringify({
       prompt: prompt,
       num_inference_steps: 10,
-      image: previous.imageBlob,
+      image: getBase64StringFromDataURL(imageBlobStr),
     });
-    console.log(`handle Edit req body ${reqBody}`);
+
 
     setCurrent((prev) => {
       return {
