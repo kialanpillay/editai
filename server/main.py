@@ -35,8 +35,11 @@ async def root(body: dict):
 
     with open("image.jpg", "wb") as f:
         f.write(base64.b64decode(body["image"]))
-
-    mask = body["mask"]
+    
+    try:
+        mask = body["mask"]
+    except KeyError:
+        mask = None
     print(body)
     if mask:
         img = cv2.imread("image.jpg")

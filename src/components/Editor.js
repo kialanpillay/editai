@@ -36,7 +36,7 @@ async function createFile(url) {
   return new File([data], "temp.png", metadata);
 }
 
-const Editor = () => {
+const Editor = () => {  
   const [history, setHistory] = useState([]);
   const [previous, setPrevious] = useState({
     prompt: "",
@@ -101,6 +101,7 @@ const Editor = () => {
     setCurrent((prev) => {
       return {
         ...prev,
+        prompt: prompt,
         status: "pending",
       };
     });
@@ -172,11 +173,11 @@ const Editor = () => {
   const uploadToClient = (event) => {
     if (event.target.files && event.target.files[0]) {
       const i = event.target.files[0];
-
+      setHistory([])
       setPrevious((prevState) => ({
         ...prevState,
         imageBlob: i,
-        ["imageURL"]: URL.createObjectURL(i),
+        imageURL: URL.createObjectURL(i),
       }));
     }
   };
@@ -202,11 +203,14 @@ const Editor = () => {
   };
 
   const handleHistory = (i) => {
-    setCurrent((prevState) => ({
-      ...prevState,
-      ["imageURL"]: history[i]["imageURL"],
-    }));
+    setPrevious(history[i])
+    setCurrent({
+      prompt: "",
+      imageURL: "",
+      status: "succeeded",
+    }); // Clear current
   };
+
 
   return (
     <section className="section">
@@ -315,26 +319,17 @@ const Editor = () => {
                 </Button>
               </Col>
             </Row>
-
-            {/* 
-             <h3 className={"mt-2"}>Edit History</h3>
-            {history.map((h, i) => {
-            <Row>
-              <Col lg={3}>
-                <Button color="primary" onClick={handleAccept}>
-                  <TiTick />
-                </Button>
-              </Col>
-              <Col lg={3}>
-                <Button color="light" onClick={handleReject}>
-                  <GrClose color="white" />
-                </Button>
-              </Col>
-            </Row>
             <h3 className={"mt-2"}>Edit History</h3>
-            {/* {history.map((h, i) => {
-                  return <a onClick={(i) => handleHistory(i)} key={i}>{h}</a>
-              })} */}
+            <ul>
+              
+            {history.map((h, i) => {
+              console.log(h)
+              console.log(i)
+              return <li onClick={(_) => handleHistory(i)} key={i}>
+                    {h.prompt}
+                    </li>
+            })}
+            </ul>
           </Col>
         </Row>
       </Container>
