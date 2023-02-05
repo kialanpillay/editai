@@ -15,6 +15,7 @@ import { GrClose, GrDownload } from "react-icons/gr";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import uuid from 'react-uuid';
+import { saveAs } from "file-saver";
 
 const SERVER_URL = "http://localhost:5000";
 const HIGH_INFERENCE_STEPS = 100;
@@ -46,7 +47,7 @@ const Editor = () => {
     imageBlob: null,
     status: "",
     mask: null,
-    seq: 0
+    seq: 0,
   });
   const [current, setCurrent] = useState({
     id: null,
@@ -55,7 +56,7 @@ const Editor = () => {
     imageBlob: null,
     status: "succeeded",
     mask: null,
-    seq: 0
+    seq: 0,
   });
 
   const [highResImage, setHighResImage] = useState({
@@ -71,6 +72,10 @@ const Editor = () => {
       ...prevState,
       [name]: value,
     }));
+  };
+
+  const handleDownload = () => {
+    saveAs(highResImage["imageURL"]);
   };
 
   const handleEdit = async (event) => {
@@ -104,6 +109,13 @@ const Editor = () => {
       };
     });
 
+    setHighResImage((prev) => {
+      return {
+        ...prev,
+        status: "pending",
+      };
+    });
+
     // Low-Res
     await fetch(`${SERVER_URL}/pix`, {
       method: "POST",
@@ -123,7 +135,7 @@ const Editor = () => {
           status: "low_fidelity",
           imageBlob: blob,
           imageURL: prediction.output,
-          seq: prev.seq + 1
+          seq: prev.seq + 1,
         };
       });
     });
@@ -143,18 +155,20 @@ const Editor = () => {
           seq: prev.seq + 1,
           imageBlob: blob,
           imageURL: prediction.output,
-          status: "succeeded"
+          status: "succeeded",
         };
       });
 
-      if (highResImage['seq'] === current['seq']) {
+      console.log(prediction);
+
+      if (highResImage["seq"] === current["seq"]) {
         setCurrent((prev) => {
           return {
             ...prev,
             id: uuid(),
             status: "high_fidelity",
-            imageBlob: highResImage['imageBlob'],
-            imageURL: highResImage['imageURL'],
+            imageBlob: blob,
+            imageURL: prediction.output,
           };
         });
       }
@@ -196,19 +210,6 @@ const Editor = () => {
       imageURL: "",
       status: "succeeded",
     }); // Clear current
-  };
-
-  const handleDownload = () => {
-    fetch(`api/download`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({url: highResImage['imageURL']}),
-    }).then((resp) => {
-      const response = resp.json();
-      console.log(response);
-    });
   };
 
   const handleHistory = (i) => {
@@ -305,9 +306,13 @@ const Editor = () => {
                 </Button>
               </Col>
               <Col lg={3} className="mb-3">
-                <Button color="light" disabled={highResImage['status'] !== "succeeded"} onClick={handleDownload}>
-                  <GrDownload  />
-                </Button> 
+                <Button
+                  color="light"
+                  disabled={highResImage["status"] !== "succeeded"}
+                  onClick={handleDownload}
+                >
+                  <GrDownload />
+                </Button>
               </Col>
             </Row>
             <h3 className={"mt-2"}>Edit History</h3>
