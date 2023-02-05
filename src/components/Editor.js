@@ -17,7 +17,7 @@ import "react-image-crop/dist/ReactCrop.css";
 import uuid from 'react-uuid';
 import { saveAs } from "file-saver";
 
-const SERVER_URL = "http://localhost:5000";
+const SERVER_URL = "http://localhost:5001";
 const HIGH_INFERENCE_STEPS = 100;
 
 function blobToBase64(blob) {
@@ -201,6 +201,7 @@ const Editor = () => {
       prompt: "",
       imageURL: "",
       status: "succeeded",
+      imageBlob: null,
     }); // Clear current
   };
 
@@ -209,6 +210,7 @@ const Editor = () => {
       prompt: "",
       imageURL: "",
       status: "succeeded",
+      imageBlob: null,
     }); // Clear current
   };
 
@@ -255,9 +257,10 @@ const Editor = () => {
           </Col>
         </Row>
         <Row className={"my-4"}>
-          <Col lg={5} md={5}>
+          <Col lg={5} md={5} sm={12} className={"mb-3"}>
             {/** Previous (or Original) Image */}
-            <Card body>
+            <p className="display-5">Original</p>
+            <Card body style={{ height: "25rem" }}>
               {previous["imageURL"] !== "" ? (
                 <ReactCrop
                   crop={previous.mask}
@@ -273,39 +276,50 @@ const Editor = () => {
               ) : null}
             </Card>
           </Col>
-          <Col lg={5} md={5}>
+          <Col lg={5} md={5} sm={12} className={"mb-3"}>
             {/** Current Image */}
-            <Card body>
+            <Row>
+              <Col sm='auto'>
+              <p className="display-5 mr-2">Edited</p>
+              </Col>
+              <Col>
+
               {current["status"] === "pending" ? (
-                <Row className="justify-content-center">
-                  <Spinner
-                    color="primary"
-                    style={{
-                      height: "3rem",
-                      width: "3rem",
-                    }}
-                  >
-                    Loading...
-                  </Spinner>
-                </Row>
-              ) : current["imageURL"] !== "" ? (
+                <Spinner
+                  color="primary"
+                  type="grow"
+                  style={{
+                    height: "3rem",
+                    width: "3rem",
+                  }}
+                >
+                  Loading...
+                </Spinner>
+              ) : null}
+              </Col>
+          
+            </Row>
+
+            <Card body style={{ height: "25rem" }}>
+              {current["status"] === "pending" ? null : current["imageURL"] !==
+                "" ? (
                 <img alt="Input" src={current.imageURL} />
               ) : null}
             </Card>
           </Col>
-          <Col lg={2} md={2}>
+          <Col lg={2} md={2} sm={12}>
             <Row>
-              <Col lg={3} className="mb-3">
+              <Col lg={3} sm={12} className="mb-3">
                 <Button color="primary" onClick={handleAccept}>
                   <TiTick />
                 </Button>
               </Col>
-              <Col lg={3} className="mb-3">
+              <Col lg={3} sm={12} className="mb-3">
                 <Button color="light" onClick={handleReject}>
                   <GrClose color="white" />
                 </Button>
               </Col>
-              <Col lg={3} className="mb-3">
+              <Col lg={3} sm={12} className="mb-3">
                 <Button
                   color="light"
                   disabled={highResImage["status"] !== "succeeded"}
