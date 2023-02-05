@@ -14,6 +14,7 @@ import { TiTick } from "react-icons/ti";
 import { GrClose, GrDownload } from "react-icons/gr";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
+import uuid from 'react-uuid';
 
 const SERVER_URL = "http://localhost:5000";
 const HIGH_INFERENCE_STEPS = 100;
@@ -38,6 +39,8 @@ async function createFile(url) {
 const Editor = () => {
   const [history, setHistory] = useState([]);
   const [previous, setPrevious] = useState({
+    id: null,
+    history_id: null,
     prompt: "",
     imageURL: "",
     imageBlob: null,
@@ -46,6 +49,7 @@ const Editor = () => {
     seq: 0
   });
   const [current, setCurrent] = useState({
+    id: null,
     prompt: "",
     imageURL: "",
     imageBlob: null,
@@ -115,6 +119,7 @@ const Editor = () => {
       setCurrent((prev) => {
         return {
           ...prev,
+          id: uuid(),
           status: "low_fidelity",
           imageBlob: blob,
           imageURL: prediction.output,
@@ -146,6 +151,7 @@ const Editor = () => {
         setCurrent((prev) => {
           return {
             ...prev,
+            id: uuid(),
             status: "high_fidelity",
             imageBlob: highResImage['imageBlob'],
             imageURL: highResImage['imageURL'],
@@ -161,15 +167,22 @@ const Editor = () => {
 
       setPrevious((prevState) => ({
         ...prevState,
+        id: uuid(),
+        history_id: 0,
         imageBlob: i,
-        ["imageURL"]: URL.createObjectURL(i),
+        imageURL: URL.createObjectURL(i),
       }));
     }
   };
 
   const handleAccept = () => {
-    setPrevious(current);
-    setHistory([...history, current]);
+    setPrevious((previous) => {
+      return {
+        ...current,
+        history_id: previous.history_id + 1,
+      };
+    });
+    setHistory([...history, previous].slice(0, previous.history_id));
     setCurrent({
       prompt: "",
       imageURL: "",
@@ -198,11 +211,11 @@ const Editor = () => {
     });
   };
 
-
   const handleHistory = (i) => {
+    setPrevious(history[i])
     setCurrent((prevState) => ({
       ...prevState,
-      ["imageURL"]: history[i]["imageURL"],
+      "imageURL": history[i]["imageURL"],
     }));
   };
 
@@ -297,26 +310,10 @@ const Editor = () => {
                 </Button> 
               </Col>
             </Row>
-           
-            {/* 
-             <h3 className={"mt-2"}>Edit History</h3>
-            {history.map((h, i) => {
-            <Row>
-              <Col lg={3}>
-                <Button color="primary" onClick={handleAccept}>
-                  <TiTick />
-                </Button>
-              </Col>
-              <Col lg={3}>
-                <Button color="light" onClick={handleReject}>
-                  <GrClose color="white" />
-                </Button>
-              </Col>
-            </Row>
             <h3 className={"mt-2"}>Edit History</h3>
-            {/* {history.map((h, i) => {
+            {history.map((h, i) => {
                   return <a onClick={(i) => handleHistory(i)} key={i}>{h}</a>
-              })} */}
+            })}
           </Col>
         </Row>
       </Container>
