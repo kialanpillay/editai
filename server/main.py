@@ -63,7 +63,7 @@ async def root(body: dict):
             'image': open("image.jpg", "rb"),
 
             'mask': open("mask.jpg", "rb"),
-            'num_inference_steps': 50,
+            'num_inference_steps': body["num_inference_steps"],
             'guidance_scale': 15,
         }
         output = version.predict(**inputs)
@@ -73,7 +73,7 @@ async def root(body: dict):
         'image': open("image.jpg", "rb"),
         'prompt': body["prompt"],
         'num_outputs': 1,
-        'num_inference_steps': body.get("num_inference_steps", 10),
+        'num_inference_steps': body["num_inference_steps"],
         'guidance_scale': 7.5,
         'image_guidance_scale': 1.5,
         'scheduler': "K_EULER_ANCESTRAL",
