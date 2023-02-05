@@ -36,4 +36,5 @@ yarn-error.log*
 
 __pycache__
 
-test.jpg
+image.jpg
+mask.jpg
