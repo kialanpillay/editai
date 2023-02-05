@@ -11,7 +11,7 @@ app = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    "http://localhost:5000",
+    "http://localhost:5001",
     ""
 ]
 
@@ -82,7 +82,7 @@ async def root(body: dict):
     return {"output": output[0]}
 
 
-uvicorn.run(app, host="0.0.0.0", port=5000)
+uvicorn.run(app, host="0.0.0.0", port=5001)
 
 
 # img = np.zeros((512, 512, 3), np.uint8)

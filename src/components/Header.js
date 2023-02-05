@@ -28,7 +28,7 @@ const Header = () => {
 
   return (
     <Navbar color="light" light container="md" expand="md" sticky={sticky ? "top" : ""}>
-      <NavbarBrand href="/">EditAI</NavbarBrand>
+      <NavbarBrand href="/">Edit<span className="text-primary font-weight-medium">AI</span></NavbarBrand>
       <NavbarToggler onClick={toggle} />
     </Navbar>
   )
