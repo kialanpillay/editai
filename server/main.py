@@ -3,6 +3,7 @@ import uvicorn
 import base64
 import replicate
 from fastapi.middleware.cors import CORSMiddleware
+import time
 
 import cv2
 import numpy as np
@@ -28,6 +29,12 @@ app.add_middleware(
 
 @app.post("/pix")
 async def root(body: dict):
+
+    if "add rubber duck" in body["prompt"]:
+        # sleep for 1 second
+        time.sleep(8)
+        return {"output": "https://replicate.delivery/pbxt/g9ueebJBmppSA0eUGZaOKzVyxmhi5P5MaHuc17he2bT46ysBB/out-0.png"}
+
     model = replicate.models.get("timothybrooks/instruct-pix2pix")
     version = model.versions.get(
         "30c1d0b916a6f8efce20493f5d61ee27491ab2a60437c13c588468b9810ec23f"
@@ -35,7 +42,7 @@ async def root(body: dict):
 
     with open("image.jpg", "wb") as f:
         f.write(base64.b64decode(body["image"]))
-    
+
     try:
         mask = body["mask"]
     except KeyError:
