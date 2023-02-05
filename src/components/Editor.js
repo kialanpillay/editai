@@ -4,6 +4,7 @@ import { TiTick } from 'react-icons/ti';
 import { GrClose } from 'react-icons/gr';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
+import {AudioRecorder} from 'react-audio-voice-recorder';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const Editor = () => {
@@ -20,6 +21,10 @@ const Editor = () => {
     mask: null,
     status: "succeeded"
   });
+
+  const handleAudio = (blob) => {
+    // TODO: Handle audio
+  };
 
   const handleChange = (event) => {
     const {name, value} = event.target
@@ -148,12 +153,15 @@ const Editor = () => {
             </InputGroup>
           </Col>
           <Col>
-            <Button onClick={() => setPrevious({
+            <AudioRecorder 
+            onRecordingComplete={(blob) => handleAudio(blob)}
+            />
+            {/* <Button onClick={() => setPrevious({
               ...previous,
               "mask": null
             })}>
               Clear mask
-            </Button>
+            </Button> */}
           </Col>
         </Row>
         <Row className={"my-4"}>
