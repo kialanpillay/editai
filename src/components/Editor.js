@@ -25,11 +25,11 @@ function blobToBase64(blob) {
   });
 }
 
-async function createFile(url){
+async function createFile(url) {
   let response = await fetch(url);
   let data = await response.blob();
   let metadata = {
-    type: 'image/png'
+    type: "image/png",
   };
   return new File([data], "temp.png", metadata);
 }
@@ -38,7 +38,7 @@ const Editor = () => {
   const [history, setHistory] = useState([]);
   const [previous, setPrevious] = useState({
     prompt: "",
-    imageURL: "https://picsum.photos/id/27/800/600",
+    imageURL: "",
     imageBlob: null,
     status: "",
     mask: null,
@@ -93,7 +93,7 @@ const Editor = () => {
     }).then(async (resp) => {
       const prediction = await resp.json();
       console.log(prediction);
-      
+
       const blob = await createFile(prediction.output);
       setCurrent((prev) => {
         return {
@@ -181,17 +181,19 @@ const Editor = () => {
           <Col lg={5} md={5}>
             {/** Previous (or Original) Image */}
             <Card body>
-              <ReactCrop
-                crop={previous.mask}
-                onChange={(c) =>
-                  setPrevious({
-                    ...previous,
-                    mask: c,
-                  })
-                }
-              >
-                <img alt="Input" src={previous["imageURL"]} />
-              </ReactCrop>
+              {previous["imageURL"] !== "" ? (
+                <ReactCrop
+                  crop={previous.mask}
+                  onChange={(c) =>
+                    setPrevious({
+                      ...previous,
+                      mask: c,
+                    })
+                  }
+                >
+                  <img alt="Input" src={previous.imageURL} />
+                </ReactCrop>
+              ) : null}
             </Card>
           </Col>
           <Col lg={5} md={5}>
