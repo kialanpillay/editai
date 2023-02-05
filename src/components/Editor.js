@@ -247,7 +247,7 @@ const Editor = () => {
           <Col lg={5} md={5} sm={12} className={"mb-3"}>
             {/** Previous (or Original) Image */}
             <p className="display-5">Original</p>
-            <Card body style={{ height: "25rem" }}>
+            <Card body style={{ minHeight: "25rem" }}>
               {previous["imageURL"] !== "" ? (
                 <ReactCrop
                   crop={previous.mask}
@@ -285,10 +285,10 @@ const Editor = () => {
               </Col>
             </Row>
 
-            <Card body style={{ height: "25rem" }}>
+            <Card body style={{ minHeight: "25rem" }}>
               {current["status"] === "pending" ? null : current["imageURL"] !==
                 "" ? (
-                <img alt="Input" src={current['status'] === "low_fidelity" ? current.imageURL: highResImage.imageURL} />
+                <img alt="Input" src={current.imageURL} />
               ) : null}
             </Card>
           </Col>
