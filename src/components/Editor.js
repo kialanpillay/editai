@@ -2,6 +2,8 @@ import React, {useState} from 'react';
 import {Container, Row, Col, Input, InputGroup, Button, Card, FormGroup, Spinner} from "reactstrap";
 import { TiTick } from 'react-icons/ti';
 import { GrClose } from 'react-icons/gr';
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const Editor = () => {
@@ -9,11 +11,13 @@ const Editor = () => {
   const [previous, setPrevious] = useState({
     prompt: "",
     imageURL: "https://picsum.photos/id/27/800/600",
+    mask: null,
     status: ""
   });
   const [current, setCurrent] = useState({
     prompt: "",
     imageURL: "",
+    mask: null,
     status: "succeeded"
   });
 
@@ -121,7 +125,7 @@ const Editor = () => {
     <section className="section">
       <Container id={"editor"}>
         <Row className=" pt-5">
-          <Col lg={5} md={12}>
+          <Col lg={5} md={5}>
             <FormGroup >
               <Input
                   name="file"
@@ -130,7 +134,7 @@ const Editor = () => {
               />
             </FormGroup>
           </Col>
-          <Col lg={5} md={12}>
+          <Col lg={5} md={5}>
             <InputGroup>
               <Input
                   name="prompt"
@@ -143,15 +147,28 @@ const Editor = () => {
               </Button>
             </InputGroup>
           </Col>
+          <Col>
+            <Button onClick={() => setPrevious({
+              ...previous,
+              "mask": null
+            })}>
+              Clear mask
+            </Button>
+          </Col>
         </Row>
         <Row className={"my-4"}>
           <Col lg={5} md={5}>
           {/** Previous (or Original) Image */}
             <Card body>
-              <img
+              <ReactCrop crop={previous.mask} onChange={c => setPrevious({
+                ...previous,
+                "mask": c
+              })}>
+                <img
                   alt="Input"
                   src={previous["imageURL"]}
-              />
+                />
+              </ReactCrop>
             </Card>
           </Col>
           <Col lg={5} md={5}>
@@ -168,7 +185,8 @@ const Editor = () => {
                 >
                   Loading...
                 </Spinner>
-              </Row> :  current["imageURL"] !== "" ? <img
+              </Row> :  current["imageURL"] !== "" ? 
+                <img
                   alt="Input"
                   src={current.imageURL}/> : null
               }
@@ -186,7 +204,7 @@ const Editor = () => {
             <GrClose color='white'/>
             </Button>
           </Col>
-        </Row>
+          </Row>
             <h3 className={"mt-2"}>
               Edit History
             </h3>
