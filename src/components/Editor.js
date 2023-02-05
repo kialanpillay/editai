@@ -14,7 +14,6 @@ import { TiTick } from "react-icons/ti";
 import { GrClose, GrDownload } from "react-icons/gr";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import uuid from 'react-uuid';
 import { saveAs } from "file-saver";
 
 const SERVER_URL = "http://localhost:5001";
@@ -40,8 +39,6 @@ async function createFile(url) {
 const Editor = () => {
   const [history, setHistory] = useState([]);
   const [previous, setPrevious] = useState({
-    id: null,
-    history_id: null,
     prompt: "",
     imageURL: "",
     imageBlob: null,
@@ -50,7 +47,6 @@ const Editor = () => {
     seq: 0,
   });
   const [current, setCurrent] = useState({
-    id: null,
     prompt: "",
     imageURL: "",
     imageBlob: null,
@@ -105,6 +101,7 @@ const Editor = () => {
     setCurrent((prev) => {
       return {
         ...prev,
+        prompt: prompt,
         status: "pending",
       };
     });
@@ -131,7 +128,6 @@ const Editor = () => {
       setCurrent((prev) => {
         return {
           ...prev,
-          id: uuid(),
           status: "low_fidelity",
           imageBlob: blob,
           imageURL: prediction.output,
@@ -165,10 +161,7 @@ const Editor = () => {
         setCurrent((prev) => {
           return {
             ...prev,
-            id: uuid(),
             status: "high_fidelity",
-            imageBlob: blob,
-            imageURL: prediction.output,
           };
         });
       }
@@ -178,11 +171,9 @@ const Editor = () => {
   const uploadToClient = (event) => {
     if (event.target.files && event.target.files[0]) {
       const i = event.target.files[0];
-
+      setHistory([]);
       setPrevious((prevState) => ({
         ...prevState,
-        id: uuid(),
-        history_id: 0,
         imageBlob: i,
         imageURL: URL.createObjectURL(i),
       }));
@@ -190,13 +181,8 @@ const Editor = () => {
   };
 
   const handleAccept = () => {
-    setPrevious((previous) => {
-      return {
-        ...current,
-        history_id: previous.history_id + 1,
-      };
-    });
-    setHistory([...history, previous].slice(0, previous.history_id));
+    setPrevious(current);
+    setHistory([...history, current]);
     setCurrent({
       prompt: "",
       imageURL: "",
@@ -215,11 +201,12 @@ const Editor = () => {
   };
 
   const handleHistory = (i) => {
-    setPrevious(history[i])
-    setCurrent((prevState) => ({
-      ...prevState,
-      "imageURL": history[i]["imageURL"],
-    }));
+    setPrevious(history[i]);
+    setCurrent({
+      prompt: "",
+      imageURL: "",
+      status: "succeeded",
+    }); // Clear current
   };
 
   return (
@@ -279,31 +266,29 @@ const Editor = () => {
           <Col lg={5} md={5} sm={12} className={"mb-3"}>
             {/** Current Image */}
             <Row>
-              <Col sm='auto'>
-              <p className="display-5 mr-2">Edited</p>
+              <Col sm="auto">
+                <p className="display-5 mr-2">Edited</p>
               </Col>
               <Col>
-
-              {current["status"] === "pending" ? (
-                <Spinner
-                  color="primary"
-                  type="grow"
-                  style={{
-                    height: "3rem",
-                    width: "3rem",
-                  }}
-                >
-                  Loading...
-                </Spinner>
-              ) : null}
+                {current["status"] === "pending" ? (
+                  <Spinner
+                    color="primary"
+                    type="grow"
+                    style={{
+                      height: "3rem",
+                      width: "3rem",
+                    }}
+                  >
+                    Loading...
+                  </Spinner>
+                ) : null}
               </Col>
-          
             </Row>
 
             <Card body style={{ height: "25rem" }}>
               {current["status"] === "pending" ? null : current["imageURL"] !==
                 "" ? (
-                <img alt="Input" src={current.imageURL} />
+                <img alt="Input" src={current['status'] === "low_fidelity" ? current.imageURL: highResImage.imageURL} />
               ) : null}
             </Card>
           </Col>
@@ -330,9 +315,17 @@ const Editor = () => {
               </Col>
             </Row>
             <h3 className={"mt-2"}>Edit History</h3>
-            {history.map((h, i) => {
-                  return <a onClick={(i) => handleHistory(i)} key={i}>{h}</a>
-            })}
+            <ul>
+              {history.map((h, i) => {
+                console.log(h);
+                console.log(i);
+                return (
+                  <li onClick={(_) => handleHistory(i)} key={i}>
+                    {h.prompt}
+                  </li>
+                );
+              })}
+            </ul>
           </Col>
         </Row>
       </Container>
