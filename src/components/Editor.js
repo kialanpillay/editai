@@ -12,6 +12,8 @@ import {
 } from "reactstrap";
 import { TiTick } from "react-icons/ti";
 import { GrClose } from "react-icons/gr";
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 const SERVER_URL = "http://localhost:5000";
 
@@ -23,12 +25,14 @@ const Editor = () => {
     imageURL: "https://picsum.photos/id/27/800/600",
     imageBlob: null,
     status: "",
+    mask: null,
   });
   const [current, setCurrent] = useState({
     prompt: "",
     imageURL: "",
     imageBlob: null,
     status: "succeeded",
+    mask: null,
   });
 
   const handleChange = (event) => {
@@ -117,12 +121,16 @@ const Editor = () => {
     <section className="section">
       <Container id={"editor"}>
         <Row className=" pt-5">
-          <Col lg={5} md={12}>
-            <FormGroup>
-              <Input name="file" onChange={uploadToClient} type="file" />
+          <Col lg={5} md={5}>
+            <FormGroup >
+              <Input
+                  name="file"
+                  onChange={uploadToClient}
+                  type="file"
+              />
             </FormGroup>
           </Col>
-          <Col lg={5} md={12}>
+          <Col lg={5} md={5}>
             <InputGroup>
               <Input
                 name="prompt"
@@ -134,35 +142,68 @@ const Editor = () => {
               <Button onClick={handleEdit}>Edit</Button>
             </InputGroup>
           </Col>
+          <Col>
+            <Button onClick={() => setPrevious({
+              ...previous,
+              "mask": null
+            })}>
+              Clear mask
+            </Button>
+          </Col>
         </Row>
         <Row className={"my-4"}>
           <Col lg={5} md={5}>
             {/** Previous (or Original) Image */}
             <Card body>
-              <img alt="Input" src={previous["imageURL"]} />
+              <ReactCrop crop={previous.mask} onChange={c => setPrevious({
+                ...previous,
+                "mask": c
+              })}>
+                <img
+                  alt="Input"
+                  src={previous["imageURL"]}
+                />
+              </ReactCrop>
             </Card>
           </Col>
           <Col lg={5} md={5}>
             {/** Current Image */}
             <Card body>
-              {current["status"] === "pending" ? (
-                <Row className="justify-content-center">
-                  <Spinner
-                    color="primary"
-                    style={{
-                      height: "3rem",
-                      width: "3rem",
-                    }}
-                  >
-                    Loading...
-                  </Spinner>
-                </Row>
-              ) : current["imageURL"] !== "" ? (
-                <img alt="Input" src={current.imageURL} />
-              ) : null}
+              {current["status"] === "pending" ? 
+              <Row className="justify-content-center">
+                 <Spinner
+                  color="primary"
+                  style={{
+                    height: '3rem',
+                    width: '3rem'
+                  }}
+                >
+                  Loading...
+                </Spinner>
+              </Row> :  current["imageURL"] !== "" ? 
+                <img
+                  alt="Input"
+                  src={current.imageURL}/> : null
+              }
             </Card>
           </Col>
           <Col lg={2} md={2}>
+          <Row>
+          <Col lg={3}>
+            <Button color="primary" onClick={handleAccept}>
+              <TiTick/>
+            </Button>
+          </Col>
+          <Col lg={3}>
+            <Button color="light" onClick={handleReject}>
+            <GrClose color='white'/>
+            </Button>
+          </Col>
+          </Row>
+            <h3 className={"mt-2"}>
+              Edit History
+            </h3>
+              {/* {history.map((h, i) => {
             <Row>
               <Col lg={3}>
                 <Button color="primary" onClick={handleAccept}>
