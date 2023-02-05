@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 import uvicorn
+import base64
 import replicate
 from fastapi.middleware.cors import CORSMiddleware
+
+from PIL import Image
+import io
 
 app = FastAPI()
 
@@ -9,6 +13,7 @@ origins = [
     "http://localhost",
     "http://localhost:3000",
     "http://localhost:5000",
+    ""
 ]
 
 app = FastAPI()
@@ -29,9 +34,10 @@ version = model.versions.get(
 
 @app.post("/pix")
 async def root(body: dict):
-    print(body)
+    with open("test.jpg", "wb") as f:
+        f.write(base64.b64decode(body["image"]))
     inputs = {
-        'image': body["image"],
+        'image': open("test.jpg", "rb"),
         'prompt': body["prompt"],
         'num_outputs': 1,
         'num_inference_steps': body.get("num_inference_steps", 10),
