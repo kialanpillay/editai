@@ -4,9 +4,6 @@ import base64
 import replicate
 from fastapi.middleware.cors import CORSMiddleware
 
-from PIL import Image
-import io
-
 app = FastAPI()
 
 origins = [
@@ -50,12 +47,3 @@ async def root(body: dict):
 
 
 uvicorn.run(app, host="0.0.0.0", port=5000)
-
-# # https://replicate.com/timothybrooks/instruct-pix2pix/versions/30c1d0b916a6f8efce20493f5d61ee27491ab2a60437c13c588468b9810ec23f#input
-
-# # https://replicate.com/timothybrooks/instruct-pix2pix/versions/30c1d0b916a6f8efce20493f5d61ee27491ab2a60437c13c588468b9810ec23f#output-schema
-# output = version.predict(**inputs)
-# print(output)
-# inputs["image"] = output[0]
-# output = version.predict(**inputs)
-# print(output)
