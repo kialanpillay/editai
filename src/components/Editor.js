@@ -9,6 +9,7 @@ import {
   Card,
   FormGroup,
   Spinner,
+  Badge,
 } from "reactstrap";
 import { TiTick } from "react-icons/ti";
 import { GrClose, GrDownload } from "react-icons/gr";
@@ -161,6 +162,8 @@ const Editor = () => {
         setCurrent((prev) => {
           return {
             ...prev,
+            imageBlob: blob,
+            imageURL: prediction.output,
             status: "high_fidelity",
           };
         });
@@ -267,7 +270,7 @@ const Editor = () => {
             {/** Current Image */}
             <Row>
               <Col sm="auto">
-                <p className="display-5 mr-2">Edited</p>
+                  <p className="display-5 mr-2">Edited</p>
               </Col>
               <Col>
                 {current["status"] === "pending" ? (
@@ -281,6 +284,11 @@ const Editor = () => {
                   >
                     Loading...
                   </Spinner>
+                ) :
+                current["status"] === "high_fidelity" ? (
+                  <h4>
+                    <Badge color="success" className="mt-3">High</Badge>
+                  </h4>
                 ) : null}
               </Col>
             </Row>
