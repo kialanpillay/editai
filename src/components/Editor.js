@@ -11,11 +11,12 @@ import {
   Spinner,
 } from "reactstrap";
 import { TiTick } from "react-icons/ti";
-import { GrClose } from "react-icons/gr";
+import { GrClose, GrDownload } from "react-icons/gr";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
 const SERVER_URL = "http://localhost:5000";
+const HIGH_INFERENCE_STEPS = 100;
 
 function blobToBase64(blob) {
   return new Promise((resolve, _) => {
@@ -42,6 +43,7 @@ const Editor = () => {
     imageBlob: null,
     status: "",
     mask: null,
+    seq: 0
   });
   const [current, setCurrent] = useState({
     prompt: "",
@@ -49,6 +51,14 @@ const Editor = () => {
     imageBlob: null,
     status: "succeeded",
     mask: null,
+    seq: 0
+  });
+
+  const [highResImage, setHighResImage] = useState({
+    imageURL: "",
+    imageBlob: null,
+    status: "pending",
+    seq: 0,
   });
 
   const handleChange = (event) => {
@@ -76,6 +86,13 @@ const Editor = () => {
       mask: previous.mask,
     });
 
+    const highResReqBody = JSON.stringify({
+      prompt: prompt,
+      num_inference_steps: HIGH_INFERENCE_STEPS,
+      image: getBase64StringFromDataURL(imageBlobStr),
+      mask: previous.mask,
+    });
+
     setCurrent((prev) => {
       return {
         ...prev,
@@ -83,7 +100,7 @@ const Editor = () => {
       };
     });
 
-    // Low fidelity request
+    // Low-Res
     await fetch(`${SERVER_URL}/pix`, {
       method: "POST",
       headers: {
@@ -101,8 +118,40 @@ const Editor = () => {
           status: "low_fidelity",
           imageBlob: blob,
           imageURL: prediction.output,
+          seq: prev.seq + 1
         };
       });
+    });
+
+    // High-Res
+    await fetch(`${SERVER_URL}/pix`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: highResReqBody,
+    }).then(async (resp) => {
+      const prediction = await resp.json();
+      const blob = await createFile(prediction.output);
+      setHighResImage((prev) => {
+        return {
+          seq: prev.seq + 1,
+          imageBlob: blob,
+          imageURL: prediction.output,
+          status: "succeeded"
+        };
+      });
+
+      if (highResImage['seq'] === current['seq']) {
+        setCurrent((prev) => {
+          return {
+            ...prev,
+            status: "high_fidelity",
+            imageBlob: highResImage['imageBlob'],
+            imageURL: highResImage['imageURL'],
+          };
+        });
+      }
     });
   };
 
@@ -135,6 +184,20 @@ const Editor = () => {
       status: "succeeded",
     }); // Clear current
   };
+
+  const handleDownload = () => {
+    fetch(`api/download`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({url: highResImage['imageURL']}),
+    }).then((resp) => {
+      const response = resp.json();
+      console.log(response);
+    });
+  };
+
 
   const handleHistory = (i) => {
     setCurrent((prevState) => ({
@@ -173,7 +236,7 @@ const Editor = () => {
                 })
               }
             >
-              Clear mask
+              Clear Mask
             </Button>
           </Col>
         </Row>
@@ -218,19 +281,26 @@ const Editor = () => {
           </Col>
           <Col lg={2} md={2}>
             <Row>
-              <Col lg={3}>
+              <Col lg={3} className="mb-3">
                 <Button color="primary" onClick={handleAccept}>
                   <TiTick />
                 </Button>
               </Col>
-              <Col lg={3}>
+              <Col lg={3} className="mb-3">
                 <Button color="light" onClick={handleReject}>
                   <GrClose color="white" />
                 </Button>
               </Col>
+              <Col lg={3} className="mb-3">
+                <Button color="light" disabled={highResImage['status'] !== "succeeded"} onClick={handleDownload}>
+                  <GrDownload  />
+                </Button> 
+              </Col>
             </Row>
-            <h3 className={"mt-2"}>Edit History</h3>
-            {/* {history.map((h, i) => {
+           
+            {/* 
+             <h3 className={"mt-2"}>Edit History</h3>
+            {history.map((h, i) => {
             <Row>
               <Col lg={3}>
                 <Button color="primary" onClick={handleAccept}>
